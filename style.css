@@ -75,3 +75,27 @@
 .team-switch{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:10px 0 4px}.team-btn{border:1px solid #cdd7e4;border-radius:10px;background:#f4f7fa;color:#33475f;padding:11px 2px;font-size:15px;font-weight:800;cursor:pointer}.team-btn.active{background:#172b4d;border-color:#172b4d;color:#fff;box-shadow:0 2px 6px #172b4d26}.team-hint{font-size:12px;color:#52627a;margin:5px 0 9px;line-height:1.5}.own-team-label{font-size:12px;color:#637188;font-weight:500}#otherTeamNotice{padding:12px;border-radius:10px;background:#f3f6fb;font-size:14px}#dayDetail[hidden],#otherTeamNotice[hidden]{display:none!important}
 
 .month-team{display:flex;align-items:center;gap:9px;min-width:0}.month-team h2{white-space:nowrap}.month-team select{width:auto;min-width:78px;padding:8px 24px 8px 9px;font-size:14px;font-weight:750;border-radius:10px;background:#eef3f9;border:1px solid #cbd6e4;color:#172b4d}.monthbar{gap:6px}.monthbar button{flex:none}#teamHint{margin-top:0}
+
+/* v2.6 compact mobile-first layout */
+.app{max-width:680px;padding:8px 8px 28px}
+.panel{margin-top:7px;padding:11px 9px;border-radius:15px}
+.monthbar{margin-bottom:10px;gap:5px}
+.monthbar h2{font-size:clamp(16px,4.3vw,22px);letter-spacing:-.7px}
+.month-team{gap:5px;flex:1;justify-content:center}
+.month-team select{min-width:64px;padding:7px 17px 7px 5px;font-size:13px}
+.monthbar button{width:29px;height:33px;font-size:21px;border-radius:8px}
+.monthbar .iconbtn{background:#f1f4f8;padding:0;font-size:19px}
+.monthbar .todaybtn{display:block;margin:0;padding:0 3px;width:32px;font-size:11px;line-height:33px}
+.weekdays{margin-bottom:5px;font-size:12px}
+.weekdays,.calendar{gap:3px}
+.cell{min-height:clamp(78px,17vw,100px);padding:5px 1px 4px;gap:3px;border-radius:9px;overflow:hidden}
+.cell .dot.day,.cell .dot.night{width:27px;height:27px;font-size:13px}
+.cell .dot.off,.cell .dot.rest{font-size:16px;padding:3px 0}
+.cell .event-tag{font-size:clamp(10px,2.65vw,12px);line-height:1.2;letter-spacing:-.4px;max-width:100%;white-space:nowrap}
+.cell .calendar-memo{display:block;width:100%;font-size:clamp(9px,2.4vw,11px);letter-spacing:-.45px;line-height:1.25;padding:0 1px;overflow:hidden;text-overflow:clip;white-space:nowrap;color:#7540ad!important}
+.team-hint[hidden],.official-legacy[hidden]{display:none!important}
+.pay h3{font-size:17px;margin:0 0 8px}.pay-main{margin:9px 0 2px}
+.pay .hint:last-child{font-size:10px;margin:10px 0 0}
+#shareCalendar{margin-top:9px;padding:9px;font-size:12px}
+footer{font-size:10px;margin:12px 3px}
+@media(min-width:500px){.cell{min-height:94px}.cell .calendar-memo{font-size:11px}}
