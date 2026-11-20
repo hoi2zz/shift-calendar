@@ -56,16 +56,16 @@ function estimateMonth(){
   const date=iso(year,month,d),weekday=new Date(year,month,d).getDay(),holiday=weekday===0||weekday===6||publicHolidays2026.has(date),workday=weekday!==0&&weekday!==6&&!publicHolidays2026.has(date),e=state.events[date],regular=effectiveShift(date),onLeave=e?.type==='leave';
   if(workday)statutoryDays++;
   if(onLeave&&shift(date)<2)leave++;
-  if(!onLeave&&regular<2){scheduled+=regular===0?10.5:14.5;if(regular===1)night+=8;if(holiday&&regular===0)holidays++;}
+  if(!onLeave&&regular<2){scheduled+=(regular===0?10.5:14.5)-(holiday&&regular===0?8:0);if(regular===1)night+=8;if(holiday&&regular===0)holidays++;}
   if(e?.type==='training')training+=(e.trainingMinutes||0)/60;
   if(e?.type==='volunteer'){
    const vn=e.volunteerShift==='night';if(vn)volNight++;else volDay++;
    // Volunteer shift hours use the recorded 10.5/14.5 reference; holiday pay replaces 8h overtime.
-   voluntary+=vn?14.5:10.5;if(vn)night+=8;if(holiday&&!vn){holidays++;volHoliday++;}
+   voluntary+=(vn?14.5:10.5)-(holiday&&!vn?8:0);if(vn)night+=8;if(holiday&&!vn){holidays++;volHoliday++;}
   }
  }
  const legal=Math.max(0,(statutoryDays-leave)*8);
- const overtime=Math.max(0,Math.floor(scheduled+voluntary+training-volHoliday*8-legal));
+ const overtime=Math.max(0,Math.floor(scheduled+voluntary+training-legal));
  return {legal,scheduled,voluntary,training,night,holidays,leave,volDay,volNight,overtime,known:year===2026};
 }
 function renderPay(){
