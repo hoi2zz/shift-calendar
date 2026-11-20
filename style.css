@@ -70,3 +70,8 @@
 #calendar .cell .event-tag.leave,#calendar .cell .event-tag.volunteer,#calendar .cell .event-tag.training,#calendar .cell .event-tag.trip{color:#087647!important;background:transparent!important;}
 #calendar .cell .calendar-memo{color:#7540ad!important;}
 #calendar .cell .dot.off,#calendar .cell .dot.rest{color:#bd2336!important;}
+
+/* v2.3: team selector */
+.team-switch{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:10px 0 4px}.team-btn{border:1px solid #cdd7e4;border-radius:10px;background:#f4f7fa;color:#33475f;padding:11px 2px;font-size:15px;font-weight:800;cursor:pointer}.team-btn.active{background:#172b4d;border-color:#172b4d;color:#fff;box-shadow:0 2px 6px #172b4d26}.team-hint{font-size:12px;color:#52627a;margin:5px 0 9px;line-height:1.5}.own-team-label{font-size:12px;color:#637188;font-weight:500}#otherTeamNotice{padding:12px;border-radius:10px;background:#f3f6fb;font-size:14px}#dayDetail[hidden],#otherTeamNotice[hidden]{display:none!important}
+
+.month-team{display:flex;align-items:center;gap:9px;min-width:0}.month-team h2{white-space:nowrap}.month-team select{width:auto;min-width:78px;padding:8px 24px 8px 9px;font-size:14px;font-weight:750;border-radius:10px;background:#eef3f9;border:1px solid #cbd6e4;color:#172b4d}.monthbar{gap:6px}.monthbar button{flex:none}#teamHint{margin-top:0}
