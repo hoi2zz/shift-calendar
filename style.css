@@ -61,3 +61,7 @@
 
 /* v1.9: personal notes in distinct high-contrast blue */
 .calendar-memo{color:#1557a0!important}
+
+/* v2.1: distinguish work events, days off, and personal notes */
+.cell .event-tag{color:#087647!important;background:transparent!important}
+.calendar-memo{color:#7540ad!important}
