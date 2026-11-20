@@ -118,3 +118,20 @@ body{background:#f7f9fc}
 #calendar .cell .dot.off,#calendar .cell .dot.rest{color:#bd2336!important}
 #calendar .cell .event-tag{color:#087647!important;background:transparent!important}
 #calendar .cell .calendar-memo{color:#7540ad!important}
+
+/* v2.8: fixed bottom navigation, tighter full-height layout */
+:root{--nav-height:58px}
+body{min-height:100dvh}
+.app{padding:5px 6px calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + 12px);max-width:680px}
+.calendar-panel{margin-top:3px}
+.panel{padding:10px 8px 11px;border-radius:14px}
+.monthbar{margin-bottom:8px}
+.weekdays{margin-bottom:4px}
+.weekdays,.calendar{gap:3px}
+.cell{min-height:clamp(78px,18vw,110px)}
+#shareCalendar{margin-top:8px}
+.view-tabs{position:fixed;z-index:100;bottom:0;left:0;right:0;margin:0 auto;max-width:680px;display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:7px 12px calc(7px + env(safe-area-inset-bottom,0px));background:rgba(247,249,252,.97);border-top:1px solid #dde5ef;border-radius:0;box-shadow:0 -3px 16px #1b2d4512;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.view-tab{min-height:44px;border-radius:12px;font-size:15px;color:#52647e}
+.view-tab.active{background:#172b4d;color:#fff;box-shadow:0 2px 7px #172b4d22}
+#calendar .cell .event-tag{font-size:clamp(9px,2.3vw,11px);letter-spacing:-.6px;white-space:nowrap}
+@media(max-width:370px){.app{padding-left:3px;padding-right:3px}.panel{padding-left:5px;padding-right:5px}.calendar{gap:2px}.cell{padding-left:0;padding-right:0}.cell .event-tag{font-size:9px!important}}
