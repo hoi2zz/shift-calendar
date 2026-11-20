@@ -38,3 +38,13 @@
 
 /* v1.6 pay panel */
 .pay h3{margin:0 0 10px}.pay label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}.pay-main{font-size:25px;font-weight:800;margin:14px 0 4px;color:#172b4d}.pay-facts{font-size:13px;line-height:1.7;background:#f2f5f8;padding:12px;border-radius:10px;margin:12px 0}.pay details{border-top:1px solid #e4eaf1;padding-top:12px;margin-top:16px}.pay summary{font-size:14px;font-weight:700;cursor:pointer}.pay-inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pay-inputs input{padding:9px 6px}.pay .hint{line-height:1.6}#volunteerWrap{background:#f0f5f9;padding:10px;border-radius:12px;margin-top:10px}#volunteerWrap[hidden],#overrideWrap[hidden]{display:none}
+
+/* v1.7: calendar-first editing and unbadged off/rest */
+.cell .dot.off,.cell .dot.rest{font-size:15px;font-weight:750;letter-spacing:-.5px;min-width:unset;width:auto;height:auto;padding:4px 0;background:none!important;border:0!important}
+.cell .dot.off{color:#48596c}.cell .dot.rest{color:#778393}
+.cell:has(.dot.off),.cell:has(.dot.rest){background:#f7f9fb}
+.cell .dot.day,.cell .dot.night{width:29px;height:29px}
+.day-dialog{width:min(94vw,450px);max-height:90dvh;overflow-y:auto;padding:18px;border-radius:18px}
+.day-dialog .detail{margin-top:14px}.day-dialog .detail h3{font-size:19px}
+.day-dialog .detail label{display:block;font-size:13px;font-weight:700;margin:13px 0 7px}
+.day-dialog .primary{width:100%}.pay-actual{border-top:1px solid #dce4ee;padding-top:12px;margin-top:12px;font-weight:700;color:#264e74;font-size:14px}

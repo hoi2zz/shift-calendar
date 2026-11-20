@@ -26,16 +26,18 @@ function render(){
   const badge=document.createElement('span');badge.className=`dot ${classes[s]}`;badge.textContent=symbols[s];btn.append(n,badge);
   if(state.memos[date]||event){const marker=document.createElement('span');marker.className='memo-marker';marker.setAttribute('aria-hidden','true');btn.append(marker);}
   if(event){const tag=document.createElement('span');tag.className=`event-tag ${event.type}`;tag.textContent=eventNames[event.type]||'이전 기록';btn.append(tag);}btn.setAttribute('aria-label',`${date} ${names[s]}${today===date?' 오늘':''}${state.memos[date]?' 메모 있음':''}`);
-  btn.addEventListener('click',()=>{selected=date;render();});grid.append(btn);
+  btn.addEventListener('click',()=>{selected=date;render();$('dayDialog').showModal();});grid.append(btn);
  }
- renderStats();renderPay();const s=effectiveShift(selected);$('selectedDate').textContent=selected;$('selectedShift').textContent=`${names[s]}${s<2?' 근무':''}`;
+ renderPay();const s=effectiveShift(selected);$('selectedDate').textContent=selected;$('selectedShift').textContent=`${names[s]}${s<2?' 근무':''}`;
  $('selectedHours').textContent=s===0?state.dayHours:s===1?state.nightHours:'정규 근무시간 없음';
  $('memo').value=state.memos[selected]||'';const ev=state.events[selected];$('eventType').value=ev?.type==='swap'?'':(ev?.type||'');$('overrideWrap').hidden=ev?.type==='volunteer';$('overrideShift').value=ev?.override===null||ev?.override===undefined?'':String(ev.override);$('volunteerWrap').hidden=ev?.type!=='volunteer';$('volunteerShift').value=ev?.volunteerShift||'day';$('saveStatus').textContent='';
 }
 function moveMonth(delta){const d=new Date(year,month+delta,1);year=d.getFullYear();month=d.getMonth();selected=iso(year,month,1);render();}
 $('prev').addEventListener('click',()=>moveMonth(-1));$('next').addEventListener('click',()=>moveMonth(1));
 $('todayBtn').addEventListener('click',()=>{const d=new Date();year=d.getFullYear();month=d.getMonth();selected=iso(year,month,d.getDate());render();});
-$('saveMemo').addEventListener('click',()=>{const value=$('memo').value.trim(),type=$('eventType').value,override=$('overrideShift').value;if(value.length>5000){$('saveStatus').textContent='메모는 5000자 이내로 입력하세요.';return;}const before=JSON.stringify(state);if(value)state.memos[selected]=value;else delete state.memos[selected];if(type)state.events[selected]={type,override:type==='volunteer'?null:(override===''?null:Number(override)),...(type==='volunteer'?{volunteerShift:$('volunteerShift').value}:{})};else delete state.events[selected];try{persist();render();$('saveStatus').textContent='저장됨';}catch{state=JSON.parse(before);$('saveStatus').textContent='저장 실패';}});
+$('closeDay').addEventListener('click',()=>$('dayDialog').close());
+$('dayDialog').addEventListener('click',e=>{if(e.target===$('dayDialog'))$('dayDialog').close();});
+$('saveMemo').addEventListener('click',()=>{const value=$('memo').value.trim(),type=$('eventType').value,override=$('overrideShift').value;if(value.length>5000){$('saveStatus').textContent='메모는 5000자 이내로 입력하세요.';return;}const before=JSON.stringify(state);if(value)state.memos[selected]=value;else delete state.memos[selected];if(type)state.events[selected]={type,override:type==='volunteer'?null:(override===''?null:Number(override)),...(type==='volunteer'?{volunteerShift:$('volunteerShift').value}:{})};else delete state.events[selected];try{persist();render();$('saveStatus').textContent='저장됨';$('dayDialog').close();}catch{state=JSON.parse(before);$('saveStatus').textContent='저장 실패';}});
 $('eventType').addEventListener('change',()=>{$('volunteerWrap').hidden=$('eventType').value!=='volunteer';$('overrideWrap').hidden=$('eventType').value==='volunteer';});
 $('settingsBtn').addEventListener('click',()=>{$('baseDate').value=state.baseDate;$('baseShift').value=String(state.baseShift);$('dayHours').value=state.dayHours;$('nightHours').value=state.nightHours;$('settings').showModal();});
 $('saveSettings').addEventListener('click',e=>{if(!$('baseDate').value){e.preventDefault();$('baseDate').reportValidity();return;}const previous=state;state={...state,baseDate:$('baseDate').value,baseShift:Number($('baseShift').value),dayHours:$('dayHours').value.trim()||defaultState.dayHours,nightHours:$('nightHours').value.trim()||defaultState.nightHours};try{state=validState(state);persist();render();}catch{state=previous;alert('설정 저장에 실패했습니다.');}});
@@ -46,18 +48,38 @@ $('shareCalendar').addEventListener('click',async()=>{const btn=$('shareCalendar
 const payRates={'순경':[11545,3848,92808],'경장':[12584,4195,101153],'경사':[12934,4311,103969],'경위':[13779,4593,110763],'경감':[15082,5027,121237],'경정':[16960,5653,136331]};
 const won=n=>Math.floor(n/10)*10;
 const currency=n=>n.toLocaleString('ko-KR')+'원';
+// Calendar-based provisional allowance estimate. No claim of official recognition.
+const publicHolidays2026=new Set(['2026-01-01','2026-02-16','2026-02-17','2026-02-18','2026-03-01','2026-03-02','2026-05-05','2026-05-24','2026-05-25','2026-06-03','2026-06-06','2026-08-15','2026-08-17','2026-09-24','2026-09-25','2026-09-26','2026-10-03','2026-10-05','2026-10-09','2026-12-25']);
+function estimateMonth(){
+ const last=new Date(year,month+1,0).getDate();let statutoryDays=0,scheduled=0,voluntary=0,night=0,holidays=0,volHoliday=0,leave=0,volDay=0,volNight=0;
+ for(let d=1;d<=last;d++){
+  const date=iso(year,month,d),weekday=new Date(year,month,d).getDay(),holiday=weekday===0||weekday===6||publicHolidays2026.has(date),workday=weekday!==0&&weekday!==6&&!publicHolidays2026.has(date),e=state.events[date],regular=effectiveShift(date),onLeave=e?.type==='leave';
+  if(workday)statutoryDays++;
+  if(onLeave&&shift(date)<2)leave++;
+  if(!onLeave&&regular<2){scheduled+=regular===0?10.5:13.5;if(regular===1)night+=8;if(holiday&&regular===0)holidays++;}
+  if(e?.type==='volunteer'){
+   const vn=e.volunteerShift==='night';if(vn)volNight++;else volDay++;
+   // Volunteer shift hours use the recorded 10.5/14.5 reference; holiday pay replaces 8h overtime.
+   voluntary+=vn?14.5:10.5;if(vn)night+=8;if(holiday&&!vn){holidays++;volHoliday++;}
+  }
+ }
+ const legal=Math.max(0,(statutoryDays-leave)*8);
+ const overtime=Math.max(0,Math.floor(scheduled+voluntary-volHoliday*8-legal));
+ return {legal,scheduled,voluntary,night,holidays,leave,volDay,volNight,overtime,known:year===2026};
+}
 function renderPay(){
- const key=`${year}-${String(month+1).padStart(2,'0')}`,v=state.officialPay[key]||{},rates=payRates[state.payRank]||payRates['경사'];
+ const key=`${year}-${String(month+1).padStart(2,'0')}`,v=state.officialPay[key]||{},rates=payRates[state.payRank]||payRates['경사'],est=estimateMonth();
  $('payRank').value=state.payRank;
  for(const [id,k] of [['officialOT','ot'],['officialNight','night'],['officialHoliday','holiday']])$(id).value=v[k]??'';
- const counts=monthlyStats();let volunteersDay=0,volunteersNight=0,leave=0;
- for(let d=1;d<=new Date(year,month+1,0).getDate();d++){const e=state.events[iso(year,month,d)];if(e?.type==='volunteer'){if(e.volunteerShift==='night')volunteersNight++;else volunteersDay++;}if(e?.type==='leave')leave++;}
  const hasAll=['ot','night','holiday'].every(k=>Number.isInteger(v[k]));
  const el=$('paySummary');el.replaceChildren();
- const title=document.createElement('p');title.className='pay-main';title.textContent=hasAll?currency(won(v.ot*rates[0])+won(v.night*rates[1])+won(v.holiday*rates[2])):'공식 실적 입력 전';el.append(title);
- const sub=document.createElement('p');sub.className='hint';sub.textContent=hasAll?`확정 실적 기준 · 시간외 ${v.ot}시간 / 야간 ${v.night}시간 / 휴일 ${v.holiday}일`:'근무표만으로는 휴일 인정·공제 시간을 확정할 수 없어 금액을 임의 계산하지 않습니다.';el.append(sub);
- const info=document.createElement('div');info.className='pay-facts';info.textContent=`근무표: 주간 ${counts[0]}일 · 야간 ${counts[1]}일 | 자원 주간 ${volunteersDay}회 · 야간 ${volunteersNight}회 | 연가 ${leave}일`;el.append(info);
- const note=document.createElement('p');note.className='hint';note.textContent=`자원근무 등록 시간표: 주간 ${volunteersDay*10.5}시간, 야간 ${volunteersNight*14.5}시간 (휴게·휴일 공제 전). 야간 자원근무의 22~06시 구간은 회당 최대 8시간이며 실제 인정시간과 다를 수 있습니다.`;el.append(note);
+ const title=document.createElement('p');title.className='pay-main';
+ const estimated=won(est.overtime*rates[0])+won(est.night*rates[1])+won(est.holidays*rates[2]);
+ title.textContent=est.known?currency(estimated):'공휴일 자료 확인 필요';el.append(title);
+ const sub=document.createElement('p');sub.className='hint';sub.textContent=est.known?'자동 예상액 · 실제 지급 확정액 아님':'2026년 외 날짜는 공휴일 데이터가 없어 자동 예상액을 표시하지 않습니다.';el.append(sub);
+ const breakdown=document.createElement('div');breakdown.className='pay-facts';breakdown.textContent=`예상 인정시간 · 시간외 ${est.overtime}시간 / 야간 ${est.night}시간 / 휴일 ${est.holidays}일`;el.append(breakdown);
+ const note=document.createElement('p');note.className='hint';note.textContent=`법정근무 ${est.legal}시간 · 실제 예정근무 ${est.scheduled}시간 · 자원 ${est.voluntary}시간 · 연가 ${est.leave}일 (주간 자원 ${est.volDay}회 / 야간 자원 ${est.volNight}회). 야간 정규근무 13시간 30분, 야간 자원근무 14시간 30분을 가정하며 휴일 주간 자원근무 1일당 8시간을 시간외에서 제외합니다. 휴게·휴일 인정 및 공휴일은 반드시 공식 내역서와 대조하세요.`;el.append(note);
+ if(hasAll){const actual=won(v.ot*rates[0])+won(v.night*rates[1])+won(v.holiday*rates[2]);const comp=document.createElement('div');comp.className='pay-actual';comp.textContent=`공식 실적 기준 ${currency(actual)} · 시간외 ${v.ot}시간 / 야간 ${v.night}시간 / 휴일 ${v.holiday}일`;el.append(comp);}
 }
 $('payRank').addEventListener('change',()=>{state.payRank=$('payRank').value;persist();renderPay();});
 $('saveOfficial').addEventListener('click',()=>{const key=`${year}-${String(month+1).padStart(2,'0')}`,v={};for(const [id,k] of [['officialOT','ot'],['officialNight','night'],['officialHoliday','holiday']]){const raw=$(id).value.trim();if(raw==='')continue;const n=Number(raw);if(!Number.isInteger(n)||n<0||n>744){alert('인정시간과 일수는 0 이상의 정수로 입력하세요.');return;}v[k]=n;}if(Object.keys(v).length)state.officialPay[key]=v;else delete state.officialPay[key];persist();renderPay();alert('해당 월 공식 인정 실적을 저장했습니다.');});
