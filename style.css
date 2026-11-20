@@ -65,3 +65,8 @@
 /* v2.1: distinguish work events, days off, and personal notes */
 .cell .event-tag{color:#087647!important;background:transparent!important}
 .calendar-memo{color:#7540ad!important}
+
+/* v2.2: explicit calendar and share palette */
+#calendar .cell .event-tag.leave,#calendar .cell .event-tag.volunteer,#calendar .cell .event-tag.training,#calendar .cell .event-tag.trip{color:#087647!important;background:transparent!important;}
+#calendar .cell .calendar-memo{color:#7540ad!important;}
+#calendar .cell .dot.off,#calendar .cell .dot.rest{color:#bd2336!important;}
