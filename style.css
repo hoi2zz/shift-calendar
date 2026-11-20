@@ -48,3 +48,16 @@
 .day-dialog .detail{margin-top:14px}.day-dialog .detail h3{font-size:19px}
 .day-dialog .detail label{display:block;font-size:13px;font-weight:700;margin:13px 0 7px}
 .day-dialog .primary{width:100%}.pay-actual{border-top:1px solid #dce4ee;padding-top:12px;margin-top:12px;font-weight:700;color:#264e74;font-size:14px}
+
+/* v1.8: high-contrast off/rest and calendar annotations */
+.cell .dot.off,.cell .dot.rest{color:#bd2336!important;font-size:17px;font-weight:850}
+.cell{min-height:90px;gap:3px;padding-bottom:5px}
+.cell .event-tag{color:#b42332!important;background:transparent!important;font-size:11px;font-weight:850;padding:0;letter-spacing:0}
+.calendar-memo{font-size:10px;line-height:1.2;font-weight:750;color:#b42332;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
+.memo-marker{display:none!important}
+.training-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#trainingWrap{background:#f0f5f9;padding:10px;border-radius:12px;margin-top:10px}
+#trainingWrap[hidden]{display:none}
+
+/* v1.9: personal notes in distinct high-contrast blue */
+.calendar-memo{color:#1557a0!important}
