@@ -145,3 +145,22 @@ html,body{min-height:100%}
 #shareCalendar{flex:0 0 auto}
 @media(max-height:650px){#calendar{grid-auto-rows:minmax(72px,auto)}#calendar .cell{min-height:72px}}
 @media(min-width:700px){.app,.view-tabs{max-width:760px}}
+
+/* v3.0: today outlined as a rectangular date tile; keep soft date backgrounds. */
+#calendar .cell.today:not(.blank) {
+  border: 2px solid #2479c9 !important;
+  background: #f7faff !important;
+  box-shadow: inset 0 0 0 1px rgba(36,121,201,.08);
+}
+#calendar .cell.today .num {
+  background: transparent !important;
+  color: #1766aa !important;
+  border-radius: 0 !important;
+  width: auto; height: auto; min-width: 0;
+  display: inline; font-weight: 850;
+}
+#calendar .cell.selected:not(.today) {
+  border: 2px solid #9db7d4 !important;
+  background: #edf5ff !important;
+}
+#calendar .cell.today.selected { border-color: #2479c9 !important; }
