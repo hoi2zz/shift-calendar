@@ -18,3 +18,23 @@
 .cell:has(.event-tag) .memo-marker{left:3px;bottom:3px}
 .legend{flex-wrap:wrap;row-gap:8px}.legend .dot{border-radius:50%}
 .event-help{font-size:12px;color:#617184;line-height:1.5;margin:7px 0 3px}
+
+/* v1.5: quiet hierarchy — work shifts are badges, days off are text */
+:root{background:#edf1f5;color:#223249}
+.panel{border-color:#e1e7ed;box-shadow:0 3px 12px #20324b07}
+.cell{background:#f7f9fb;min-height:76px;gap:5px;border:1px solid #eef1f5}
+.cell:has(.dot.day){background:#f0f5f9}
+.cell:has(.dot.night){background:#edf1f5}
+.cell:has(.dot.off),.cell:has(.dot.rest){background:#fafbfc}
+.cell.selected{background:#eaf1f8!important;border:2px solid #516a84}
+.dot.day{background:#d8e5ef;color:#253c50}
+.dot.night{background:#41566c;color:#fff}
+.dot.off,.dot.rest{background:transparent;border:0;border-radius:0;width:auto;min-width:27px;padding:0 2px;height:27px;font-size:12px;font-weight:650}
+.dot.off{color:#667787}.dot.rest{color:#98a3af}
+.legend .dot.off,.legend .dot.rest{width:auto;min-width:22px;border:0}
+.event-tag.leave{background:#f8e6cb;color:#80501d}
+.event-tag.volunteer{background:#dce9f5;color:#24577e}
+.cell.today .num{background:#344f69}
+
+/* v1.6 pay panel */
+.pay h3{margin:0 0 10px}.pay label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}.pay-main{font-size:25px;font-weight:800;margin:14px 0 4px;color:#172b4d}.pay-facts{font-size:13px;line-height:1.7;background:#f2f5f8;padding:12px;border-radius:10px;margin:12px 0}.pay details{border-top:1px solid #e4eaf1;padding-top:12px;margin-top:16px}.pay summary{font-size:14px;font-weight:700;cursor:pointer}.pay-inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.pay-inputs input{padding:9px 6px}.pay .hint{line-height:1.6}#volunteerWrap{background:#f0f5f9;padding:10px;border-radius:12px;margin-top:10px}#volunteerWrap[hidden],#overrideWrap[hidden]{display:none}
