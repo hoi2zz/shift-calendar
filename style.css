@@ -135,3 +135,13 @@ body{min-height:100dvh}
 .view-tab.active{background:#172b4d;color:#fff;box-shadow:0 2px 7px #172b4d22}
 #calendar .cell .event-tag{font-size:clamp(9px,2.3vw,11px);letter-spacing:-.6px;white-space:nowrap}
 @media(max-width:370px){.app{padding-left:3px;padding-right:3px}.panel{padding-left:5px;padding-right:5px}.calendar{gap:2px}.cell{padding-left:0;padding-right:0}.cell .event-tag{font-size:9px!important}}
+
+/* v2.9: device-independent viewport fill; short displays can scroll */
+html,body{min-height:100%}
+.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;padding-bottom:calc(68px + env(safe-area-inset-bottom,0px))}
+#calendarPanel:not([hidden]){flex:1 1 auto;display:flex;flex-direction:column;min-height:0}
+#calendar{flex:1 1 auto;grid-auto-rows:minmax(78px,1fr);align-content:stretch}
+#calendar .cell{min-height:78px}
+#shareCalendar{flex:0 0 auto}
+@media(max-height:650px){#calendar{grid-auto-rows:minmax(72px,auto)}#calendar .cell{min-height:72px}}
+@media(min-width:700px){.app,.view-tabs{max-width:760px}}
