@@ -99,3 +99,22 @@
 #shareCalendar{margin-top:9px;padding:9px;font-size:12px}
 footer{font-size:10px;margin:12px 3px}
 @media(min-width:500px){.cell{min-height:94px}.cell .calendar-memo{font-size:11px}}
+
+/* v2.7: calm, airy calendar and high contrast shift badges */
+:root{background:#f7f9fc;color:#263449}
+body{background:#f7f9fc}
+.app{max-width:680px;padding:9px 8px 30px}
+.panel{background:#fff;border-color:#e8edf3;box-shadow:0 3px 15px #1b2d4508}
+.calendar-panel{margin-top:8px}
+#calendarPanel[hidden],#payPanel[hidden]{display:none!important}
+.view-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;background:#e9eef5;border-radius:12px;padding:4px;margin:2px 1px 5px}
+.view-tab{border:0;border-radius:9px;background:transparent;color:#607087;font-size:14px;font-weight:750;padding:10px 6px;cursor:pointer}
+.view-tab.active{background:#fff;color:#172b4d;box-shadow:0 2px 6px #24375018}
+.cell,.cell:has(.dot.day),.cell:has(.dot.night),.cell:has(.dot.off),.cell:has(.dot.rest){background:#fff;border:1px solid #e9edf3}
+.cell.selected{background:#edf5ff!important;border:2px solid #516a84}
+#calendar .cell .dot.day{background:#ffd51b;color:#273449;border:0}
+#calendar .cell .dot.night{background:#414b5a;color:#fff;border:0}
+#calendar .cell .dot.day,#calendar .cell .dot.night{width:30px;height:30px;font-size:15px}
+#calendar .cell .dot.off,#calendar .cell .dot.rest{color:#bd2336!important}
+#calendar .cell .event-tag{color:#087647!important;background:transparent!important}
+#calendar .cell .calendar-memo{color:#7540ad!important}
