@@ -3,3 +3,18 @@
 .cell.today .num{background:#172b4d;color:white;border-radius:50%;min-width:20px;height:20px;display:grid;place-items:center;font-weight:700}.cell{position:relative}.memo-marker{position:absolute;bottom:3px;width:5px;height:5px;background:#e09a2e;border-radius:50%}.todaybtn{display:block;margin:-6px auto 12px;border:1px solid #d7e0eb;border-radius:9px;background:#fff;color:#172b4d;padding:7px 13px;font-size:12px;font-weight:700}.secondary{border:1px solid #b9c8dc;background:white;color:#172b4d;padding:11px;border-radius:10px;font-weight:700}dialog hr{border:0;border-top:1px solid #e3e8ef;margin-top:20px}dialog form{max-height:80vh;overflow-y:auto}#backupStatus{min-height:1.2em}
 
 .wide{display:block;width:100%;margin-top:16px}.stats h3{margin:0 0 12px}.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat-item{background:#f4f7fb;border-radius:10px;padding:12px 4px;text-align:center;display:flex;flex-direction:column;gap:5px}.stat-item strong{font-size:17px;color:#172b4d}.stat-item small{font-size:11px;color:#65748b}.event-tag{position:absolute;bottom:1px;right:2px;background:#fff4d9;color:#885e16;border-radius:4px;font-size:9px;padding:1px 2px}.cell:has(.event-tag) .memo-marker{left:5px;bottom:5px}#overrideWrap{margin-top:4px}#plusMinus{line-height:1.6}button:disabled{opacity:.5}
+
+/* v1.4: 차분한 단색 계열의 근무 배지와 선명한 일정 태그 */
+:root{color:#202b38;background:#f4f6f8}
+.day{background:#dce6ee;color:#263c50}.night{background:#475d73;color:#fff}.off{background:#e5e9ed;color:#485563}.rest{background:#f1f2f3;color:#69737d;border:1px solid #d6dce2}
+.cell{background:#fafbfc;min-height:72px;gap:4px;padding-top:6px}
+.cell.selected{border:2px solid #435f7d;background:#eef3f8}
+.cell.today .num{background:#364e67}
+.event-tag{position:static;display:block;max-width:100%;font-size:10px;font-weight:800;line-height:1.3;border-radius:5px;padding:2px 4px;white-space:nowrap;letter-spacing:-.4px}
+.event-tag.leave{background:#fff0d9;color:#88541c}
+.event-tag.volunteer{background:#dcecfb;color:#235a87}
+.event-tag.training,.event-tag.trip{background:#eceef2;color:#4b5969}
+.memo-marker{left:5px;bottom:4px;background:#7c8794}
+.cell:has(.event-tag) .memo-marker{left:3px;bottom:3px}
+.legend{flex-wrap:wrap;row-gap:8px}.legend .dot{border-radius:50%}
+.event-help{font-size:12px;color:#617184;line-height:1.5;margin:7px 0 3px}
