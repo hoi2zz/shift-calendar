@@ -177,3 +177,11 @@ html,body{min-height:100%}
   border-radius:50% !important;width:30px !important;height:30px !important;
   display:inline-grid !important;place-items:center !important;font-size:15px !important;font-weight:800 !important;
 }
+
+/* v3.2: 2026 public holiday labels; do not replace shift or volunteer badges */
+#calendar .cell.public-holiday .num{color:#c52c38;font-weight:850}
+#calendar .cell .holiday-label{position:absolute;top:21px;left:0;right:0;display:block;text-align:center;font-size:clamp(8px,2.05vw,10px);font-weight:750;letter-spacing:-.6px;line-height:1.1;color:#c52c38;white-space:nowrap;overflow:hidden;text-overflow:clip;pointer-events:none}
+#calendar .cell.public-holiday .dot{margin-top:12px}
+#calendar .cell.public-holiday .dot.off,#calendar .cell.public-holiday .dot.rest{margin-top:12px}
+#calendar .cell.public-holiday .calendar-memo{font-size:clamp(8px,2.2vw,10px)}
+@media(max-width:360px){#calendar .cell .holiday-label{font-size:8px;letter-spacing:-.8px}}
