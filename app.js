@@ -91,7 +91,7 @@ const publicHolidays2026=new Set(['2026-01-01','2026-02-16','2026-02-17','2026-0
 function estimateMonth(){
  const last=new Date(year,month+1,0).getDate();let statutoryDays=0,scheduled=0,voluntary=0,training=0,night=0,holidays=0,volHoliday=0,leave=0,volDay=0,volNight=0;
  for(let d=1;d<=last;d++){
-  const date=iso(year,month,d),weekday=new Date(year,month,d).getDay(),holiday=weekday===0||weekday===6||Boolean(holidayNameForDate(date)),workday=weekday!==0&&weekday!==6&&!Boolean(holidayNameForDate(date)),e=profile().events[date],regular=effectiveShift(date),onLeave=e?.type==='leave';
+  const date=iso(year,month,d),weekday=new Date(year,month,d).getDay(),holiday=weekday===0||weekday===6||Boolean(holidayNameForDate(date)),workday=weekday!==0&&weekday!==6&&!Boolean(holidayNameForDate(date)),e=profile().events[date],regular=effectiveShift(date),onLeave=e?.type==='leave',halfLeave=e?.type==='halfleave',partial=['late','early','outing'].includes(e?.type),absenceHours=(halfLeave||partial)&&e?.absenceStart&&e?.absenceEnd?Math.max(0,(Number(e.absenceEnd.slice(0,2))*60+Number(e.absenceEnd.slice(3,5))-Number(e.absenceStart.slice(0,2))*60-Number(e.absenceStart.slice(3,5)))/60):0;
   if(workday)statutoryDays++;
   if(onLeave&&teamShift(date)<2)leave++;if(halfLeave&&teamShift(date)<2)leave+=0.5;
   if(!onLeave&&regular<2){scheduled+=Math.max(0,(regular===0?10.5:14.5)-(holiday&&regular===0?8:0)-(halfLeave||partial?absenceHours:0));if(regular===1)night+=8;if(holiday&&regular===0)holidays++;}
