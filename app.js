@@ -118,7 +118,56 @@ function renderPay(){
 }
 $('payRank').addEventListener('change',()=>{profile().payRank=$('payRank').value;persist();renderPay();});
 $('saveOfficial').addEventListener('click',()=>{const key=`${year}-${String(month+1).padStart(2,'0')}`,v={};for(const [id,k] of [['officialOT','ot'],['officialNight','night'],['officialHoliday','holiday']]){const raw=$(id).value.trim();if(raw==='')continue;const n=Number(raw);if(!Number.isInteger(n)||n<0||n>744){alert('인정시간과 일수는 0 이상의 정수로 입력하세요.');return;}v[k]=n;}if(Object.keys(v).length)profile().officialPay[key]=v;else delete profile().officialPay[key];persist();renderPay();alert('해당 월 공식 인정 실적을 저장했습니다.');});
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+// v3.5: detect deployed updates without removing locally saved schedules.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    const notice = document.getElementById('updateNotice');
+    const apply = document.getElementById('applyUpdate');
+    const dismiss = document.getElementById('dismissUpdate');
+    let registration;
+    let installing;
+    let deferred = false;
+    let applying = false;
+    const showUpdate = () => {
+      if (!registration?.waiting || !navigator.serviceWorker.controller || deferred) return;
+      notice.hidden = false;
+    };
+    try {
+      registration = await navigator.serviceWorker.register('./sw.js', {updateViaCache:'none'});
+      showUpdate();
+      const watchInstalling = worker => {
+        if (!worker || worker === installing) return;
+        installing = worker;
+        worker.addEventListener('statechange', () => {
+          if (worker.state === 'installed') showUpdate();
+        });
+      };
+      registration.addEventListener('updatefound', () => watchInstalling(registration.installing));
+      watchInstalling(registration.installing);
+      apply.addEventListener('click', () => {
+        if (!registration.waiting) return;
+        applying = true;
+        apply.disabled = true;
+        apply.textContent = '적용 중…';
+        registration.waiting.postMessage({type:'SKIP_WAITING'});
+      });
+      dismiss.addEventListener('click', () => {deferred = true; notice.hidden = true;});
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (applying) window.location.reload();
+      });
+      const check = () => {
+        if (document.visibilityState === 'visible' && navigator.onLine) {
+          registration.update().then(showUpdate).catch(() => {});
+        }
+      };
+      document.addEventListener('visibilitychange', check);
+      window.addEventListener('focus', check);
+      window.setInterval(check, 30 * 60 * 1000);
+      check();
+    } catch (error) { /* The calendar continues to work when SW is unavailable. */ }
+  });
+}
+
 render();
 
 // v2.7: tabs change presentation only; all team data and pay calculations stay unchanged.
