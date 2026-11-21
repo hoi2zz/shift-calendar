@@ -218,3 +218,8 @@ html,body{min-height:100%}
 .update-notice span { flex:1 1 125px; font-weight:700; }
 .update-notice button { border:1px solid #9ab8d7; border-radius:8px; padding:7px 10px; font:inherit; cursor:pointer; background:white; color:#173e65; }
 .update-notice #applyUpdate { background:#176cbd; color:white; border-color:#176cbd; font-weight:700; }
+
+/* v3.6 compact time selection */
+.absence-times{display:flex;align-items:center;gap:8px;margin:8px 0}.absence-times input{width:calc(50% - 14px);min-width:0;padding:11px 7px;border:1px solid #cad4df;border-radius:10px;background:#fff;color:#20324d;font:inherit}.absence-times span{flex:none}.event-tag.halfleave,.event-tag.late,.event-tag.early,.event-tag.outing{color:#087647}
+
+#eventCategory,#eventType{width:100%;min-height:44px}#eventDetailWrap{margin-top:10px}#payCaution{margin-top:8px}
