@@ -164,3 +164,16 @@ html,body{min-height:100%}
   background: #edf5ff !important;
 }
 #calendar .cell.today.selected { border-color: #2479c9 !important; }
+
+/* v3.1: distinct red today outline and green volunteer shift badge on off/rest days */
+#calendar .cell.today:not(.blank),#calendar .cell.today.selected {
+  border:2px solid #df3b3b !important;
+  box-shadow:inset 0 0 0 1px rgba(223,59,59,.06);
+}
+#calendar .cell.today .num { color:#cb2828 !important; }
+#calendar .cell.today.selected { background:#edf5ff !important; }
+#calendar .cell .dot.volunteer-badge {
+  background:#17865b !important;color:#fff !important;border:0 !important;
+  border-radius:50% !important;width:30px !important;height:30px !important;
+  display:inline-grid !important;place-items:center !important;font-size:15px !important;font-weight:800 !important;
+}
