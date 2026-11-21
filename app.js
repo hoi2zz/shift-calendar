@@ -27,7 +27,7 @@ const shift=date=>calculateShift(date,'2026-11-21',0);
 const teamShift=(date,team=state.viewTeam)=>(shift(date)+[0,0,3,2,1][team])%4;
 const viewingOwnTeam=()=>true;
 const effectiveShift=date=>profile().events[date]?.override??teamShift(date);
-const eventGroups={leave:[['leave','연가'],['halfleave','반일연가']],time:[['late','지각'],['early','조퇴'],['outing','외출']],special:[['familycare','가족돌봄'],['familyevent','경조사'],['pregcheck','임신검진'],['pregaccompany','임신검진 동행']],other:[['publicleave','공가'],['compday','대체휴무'],['volunteer','자원근무'],['training','교육']]};
+const eventGroups={leave:[['leave','연가'],['halfleave','반일연가']],time:[['late','지각'],['early','조퇴'],['outing','외출']],special:[['familycare','가족돌봄'],['familyevent','경조사'],['pregcheck','임신검진'],['pregaccompany','임신검진 동행']],other:[['publicleave','공가'],['compday','대체휴무']],volunteer:[['volunteer','자원근무']],training:[['training','교육']]};
 const eventGroupFor=type=>type==='trip'?'other':(Object.keys(eventGroups).find(g=>eventGroups[g].some(([v])=>v===type))||'');
 function setEventCategory(group,type=''){
  const sel=$('eventType');sel.replaceChildren();
@@ -111,13 +111,21 @@ const won=n=>Math.floor(n/10)*10;
 const currency=n=>n.toLocaleString('ko-KR')+'원';
 // Calendar-based provisional allowance estimate. No claim of official recognition.
 const publicHolidays2026=new Set(['2026-01-01','2026-02-16','2026-02-17','2026-02-18','2026-03-01','2026-03-02','2026-05-05','2026-05-24','2026-05-25','2026-06-03','2026-06-06','2026-08-15','2026-08-17','2026-09-24','2026-09-25','2026-09-26','2026-10-03','2026-10-05','2026-10-09','2026-12-25']);
+function overlapNightHours(start,end){
+ if(!start||!end)return 0;const mins=t=>Number(t.slice(0,2))*60+Number(t.slice(3,5));const a=mins(start),b=mins(end);
+ // The 22:00–06:00 night period may cross midnight. Same-day time entries only.
+ return (Math.max(0,Math.min(b,1440)-Math.max(a,1320))+Math.max(0,Math.min(b,360)-Math.max(a,0)))/60;
+}
 function estimateMonth(){
- const last=new Date(year,month+1,0).getDate();let statutoryDays=0,scheduled=0,voluntary=0,training=0,night=0,holidays=0,volHoliday=0,leave=0,volDay=0,volNight=0;
+ const last=new Date(year,month+1,0).getDate();let statutoryDays=0,statutoryAbsence=0,scheduled=0,voluntary=0,training=0,night=0,holidays=0,volHoliday=0,leave=0,volDay=0,volNight=0;
  for(let d=1;d<=last;d++){
   const date=iso(year,month,d),weekday=new Date(year,month,d).getDay(),holiday=weekday===0||weekday===6||Boolean(holidayNameForDate(date)),workday=weekday!==0&&weekday!==6&&!Boolean(holidayNameForDate(date)),e=profile().events[date],regular=effectiveShift(date),onLeave=e?.type==='leave',halfLeave=e?.type==='halfleave',partial=['late','early','outing'].includes(e?.type),absenceHours=(halfLeave||partial)&&e?.absenceStart&&e?.absenceEnd?Math.max(0,(Number(e.absenceEnd.slice(0,2))*60+Number(e.absenceEnd.slice(3,5))-Number(e.absenceStart.slice(0,2))*60-Number(e.absenceStart.slice(3,5)))/60):0;
   if(workday)statutoryDays++;
   if(onLeave&&teamShift(date)<2)leave++;if(halfLeave&&teamShift(date)<2)leave+=0.5;
-  if(!onLeave&&regular<2){scheduled+=Math.max(0,(regular===0?10.5:14.5)-(holiday&&regular===0?8:0)-(halfLeave||partial?absenceHours:0));if(regular===1)night+=8;if(holiday&&regular===0)holidays++;}
+  // On weekdays, approved partial absence reduces both actual duty time and statutory duty time.
+  // This is a provisional estimate; official recognition depends on duty logs and leave rules.
+  if(workday && regular<2 && (halfLeave||partial)) statutoryAbsence+=Math.min(8,absenceHours);
+  if(!onLeave&&regular<2){scheduled+=Math.max(0,(regular===0?10.5:14.5)-(holiday&&regular===0?8:0)-(halfLeave||partial?absenceHours:0));if(regular===1){const nightAbsence=(halfLeave||partial)?overlapNightHours(e.absenceStart,e.absenceEnd):0;night+=Math.max(0,8-nightAbsence);}if(holiday&&regular===0)holidays++;}
   if(e?.type==='training')training+=(e.trainingMinutes||0)/60;
   if(e?.type==='volunteer'){
    const vn=e.volunteerShift==='night';if(vn)volNight++;else volDay++;
@@ -125,7 +133,7 @@ function estimateMonth(){
    voluntary+=(vn?14.5:10.5)-(holiday&&!vn?8:0);if(vn)night+=8;if(holiday&&!vn){holidays++;volHoliday++;}
   }
  }
- const legal=Math.max(0,(statutoryDays-leave)*8);
+ const legal=Math.max(0,(statutoryDays-leave)*8-statutoryAbsence);
  const overtime=Math.max(0,Math.floor(scheduled+voluntary+training-legal));
  return {legal,scheduled,voluntary,training,night,holidays,leave,volDay,volNight,overtime,known:holidaysKnown(year)};
 }
