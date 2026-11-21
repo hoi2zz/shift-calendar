@@ -185,3 +185,29 @@ html,body{min-height:100%}
 #calendar .cell.public-holiday .dot.off,#calendar .cell.public-holiday .dot.rest{margin-top:12px}
 #calendar .cell.public-holiday .calendar-memo{font-size:clamp(8px,2.2vw,10px)}
 @media(max-width:360px){#calendar .cell .holiday-label{font-size:8px;letter-spacing:-.8px}}
+
+/* v3.4: 공휴일은 근무 배지 아래에 일반 흐름으로 표시 (겹침 방지) */
+#calendar .cell .holiday-label {
+  position:static !important;
+  display:block;
+  flex:0 0 auto;
+  width:100%;
+  margin:0;
+  padding:0 1px;
+  text-align:center;
+  font-size:clamp(8px,2.05vw,10px);
+  line-height:1.15;
+  font-weight:750;
+  letter-spacing:-.5px;
+  color:#c52c38;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  pointer-events:none;
+}
+#calendar .cell.public-holiday .dot,
+#calendar .cell.public-holiday .dot.off,
+#calendar .cell.public-holiday .dot.rest { margin-top:0 !important; }
+#calendar .cell.public-holiday { gap:2px; }
+#calendar .cell.public-holiday .calendar-memo,
+#calendar .cell.public-holiday .event-tag { flex:0 0 auto; }
