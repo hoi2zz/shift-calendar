@@ -223,3 +223,19 @@ html,body{min-height:100%}
 .absence-times{display:flex;align-items:center;gap:8px;margin:8px 0}.absence-times input{width:calc(50% - 14px);min-width:0;padding:11px 7px;border:1px solid #cad4df;border-radius:10px;background:#fff;color:#20324d;font:inherit}.absence-times span{flex:none}.event-tag.halfleave,.event-tag.late,.event-tag.early,.event-tag.outing{color:#087647}
 
 #eventCategory,#eventType{width:100%;min-height:44px}#eventDetailWrap{margin-top:10px}#payCaution{margin-top:8px}
+
+/* v4.0: compact, touch-friendly two-step event picker */
+.event-section-heading{font-size:13px;font-weight:750;color:#23344e;margin:17px 0 9px}
+.event-section-heading span{display:block;color:#758398;font-size:11px;font-weight:400;margin-top:3px}
+.event-category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.event-category-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;min-height:78px;padding:12px 5px;background:#fff;border:1.5px solid #dce4ed;border-radius:13px;color:#293b53;font-size:13px;font-weight:750;cursor:pointer;touch-action:manipulation}
+.event-category-card .category-symbol{font-size:24px;line-height:1;color:#7c8ca0}
+.event-category-card.active{border-color:#347be4;background:#eaf3ff;color:#174f9b;box-shadow:0 0 0 1px #347be420}
+.event-category-card.active .category-symbol{color:#347be4}
+.event-choice-wrap{margin-top:12px}
+.event-choice-list{display:grid;gap:7px}
+.event-choice{display:flex!important;align-items:center;gap:10px;padding:11px 12px;border:1px solid #e0e7f0;border-radius:10px;background:#fff;font-size:13px!important;font-weight:600!important;margin:0!important;cursor:pointer}
+.event-choice.selected{border-color:#347be4;background:#f0f6ff}
+.event-choice input{width:18px;height:18px;flex:none;margin:0;accent-color:#347be4;padding:0}
+.clear-event{display:block;margin:10px 0 0 auto;padding:8px 9px;border:0;background:transparent;color:#64748b;text-decoration:underline;font-size:12px;cursor:pointer}
+.event-choice-wrap[hidden],.clear-event[hidden]{display:none!important}

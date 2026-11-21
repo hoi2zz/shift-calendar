@@ -28,8 +28,31 @@ const teamShift=(date,team=state.viewTeam)=>(shift(date)+[0,0,3,2,1][team])%4;
 const viewingOwnTeam=()=>true;
 const effectiveShift=date=>profile().events[date]?.override??teamShift(date);
 const eventGroups={leave:[['leave','연가'],['halfleave','반일연가']],time:[['late','지각'],['early','조퇴'],['outing','외출']],special:[['familycare','가족돌봄'],['familyevent','경조사'],['pregcheck','임신검진'],['pregaccompany','임신검진 동행']],other:[['publicleave','공가'],['compday','대체휴무'],['volunteer','자원근무'],['training','교육']]};
-const eventGroupFor=type=>Object.keys(eventGroups).find(g=>eventGroups[g].some(([v])=>v===type))||'';
-function setEventCategory(group,type=''){const sel=$('eventType');sel.replaceChildren();for(const [value,label] of (eventGroups[group]||[])){const opt=document.createElement('option');opt.value=value;opt.textContent=label;sel.append(opt);} $('eventCategory').value=group;$('eventDetailWrap').hidden=!group;if(type&&[...sel.options].some(o=>o.value===type))sel.value=type;updateEventControls();}
+const eventGroupFor=type=>type==='trip'?'other':(Object.keys(eventGroups).find(g=>eventGroups[g].some(([v])=>v===type))||'');
+function setEventCategory(group,type=''){
+ const sel=$('eventType');sel.replaceChildren();
+ const options=eventGroups[group]||[];
+ for(const [value,label] of options){const opt=document.createElement('option');opt.value=value;opt.textContent=label;sel.append(opt);}
+ // Older 출장 entries remain readable even though new 출장 registration is disabled.
+ if(type==='trip'&&!options.some(([v])=>v===type)){const opt=document.createElement('option');opt.value='trip';opt.textContent='출장 (이전 기록)';sel.append(opt);}
+ $('eventCategory').value=group;
+ if(type&&[...sel.options].some(o=>o.value===type))sel.value=type;
+ $('eventDetailWrap').hidden=!group;
+ $('clearEvent').hidden=!group;
+ document.querySelectorAll('.event-category-card').forEach(btn=>{const active=btn.dataset.group===group;btn.classList.toggle('active',active);btn.setAttribute('aria-pressed',String(active));});
+ renderEventChoices();updateEventControls();
+}
+function renderEventChoices(){
+ const list=$('eventChoiceList');list.replaceChildren();
+ const selected=$('eventType').value;
+ for(const opt of $('eventType').options){
+  const label=document.createElement('label');label.className='event-choice'+(opt.value===selected?' selected':'');
+  const input=document.createElement('input');input.type='radio';input.name='eventChoice';input.value=opt.value;input.checked=opt.value===selected;
+  input.addEventListener('change',()=>{$('eventType').value=input.value;renderEventChoices();updateEventControls();});
+  const text=document.createElement('span');text.textContent=opt.textContent;
+  label.append(input,text);list.append(label);
+ }
+}
 function updateEventControls(){const t=$('eventType').value;updateAbsenceUI();$('volunteerWrap').hidden=t!=='volunteer';$('overrideWrap').hidden=t==='volunteer';$('trainingWrap').hidden=t!=='training';$('payCaution').hidden=!['familycare','familyevent','pregcheck','pregaccompany','publicleave','compday'].includes(t);}
 const eventNames={leave:'연가',halfleave:'반일연가',late:'지각',early:'조퇴',outing:'외출',volunteer:'자원',training:'교육',trip:'출장',familycare:'가족돌봄',familyevent:'경조사',pregcheck:'임신검진',pregaccompany:'임신검진 동행',publicleave:'공가',compday:'대체휴무'};
 // Calendar labels for the same 2026 dates already used in allowance calculations.
@@ -75,8 +98,8 @@ $('prev').addEventListener('click',()=>moveMonth(-1));$('next').addEventListener
 $('todayBtn').addEventListener('click',()=>{const d=new Date();year=d.getFullYear();month=d.getMonth();selected=iso(year,month,d.getDate());render();ensureHolidayYear(year);});
 $('closeDay').addEventListener('click',()=>$('dayDialog').close());
 $('dayDialog').addEventListener('click',e=>{if(e.target===$('dayDialog'))$('dayDialog').close();});
-$('saveMemo').addEventListener('click',()=>{const value=$('memo').value.trim(),type=$('eventType').value,override=$('overrideShift').value;if(value.length>5000){$('saveStatus').textContent='메모는 5000자 이내로 입력하세요.';return;}const before=JSON.stringify(state);if(value)profile().memos[selected]=value;else delete profile().memos[selected];if(['halfleave','late','early','outing'].includes(type)&&(!$('absenceStart').value||!$('absenceEnd').value||$('absenceStart').value >= $('absenceEnd').value)){$('saveStatus').textContent='시작·종료 시간을 올바르게 입력하세요.';return;}if(type)profile().events[selected]={type,override:type==='volunteer'?null:(override===''?null:Number(override)),...(type==='volunteer'?{volunteerShift:$('volunteerShift').value}:{}),...(['halfleave','late','early','outing'].includes(type)?{absenceStart:$('absenceStart').value,absenceEnd:$('absenceEnd').value}:{}),...(type==='training'?{trainingMinutes:Number($('trainingHours').value)*60+Number($('trainingMinutes').value)}:{})};else delete profile().events[selected];try{persist();render();$('saveStatus').textContent='저장됨';$('dayDialog').close();}catch{state=JSON.parse(before);$('saveStatus').textContent='저장 실패';}});
-function updateAbsenceUI(){const t=$('eventType').value;const active=['halfleave','late','early','outing'].includes(t);$('absenceWrap').hidden=!active;$('absenceHint').textContent=t==='halfleave'?'반일연가: 오전 09:00~14:00 또는 오후 14:00~18:00':t==='late'?'지각: 출근 예정 시각부터 실제 출근 시각까지':t==='early'?'조퇴: 실제 퇴근 시각부터 근무 종료 시각까지':'외출: 근무 중 외출 시작~복귀 시각';}$('eventCategory').addEventListener('change',()=>setEventCategory($('eventCategory').value));$('eventType').addEventListener('change',updateEventControls);
+$('saveMemo').addEventListener('click',()=>{const value=$('memo').value.trim(),type=$('eventCategory').value?$('eventType').value:'',override=$('overrideShift').value;if(value.length>5000){$('saveStatus').textContent='메모는 5000자 이내로 입력하세요.';return;}const before=JSON.stringify(state);if(value)profile().memos[selected]=value;else delete profile().memos[selected];if(['halfleave','late','early','outing'].includes(type)&&(!$('absenceStart').value||!$('absenceEnd').value||$('absenceStart').value >= $('absenceEnd').value)){$('saveStatus').textContent='시작·종료 시간을 올바르게 입력하세요.';return;}if(type)profile().events[selected]={type,override:type==='volunteer'?null:(override===''?null:Number(override)),...(type==='volunteer'?{volunteerShift:$('volunteerShift').value}:{}),...(['halfleave','late','early','outing'].includes(type)?{absenceStart:$('absenceStart').value,absenceEnd:$('absenceEnd').value}:{}),...(type==='training'?{trainingMinutes:Number($('trainingHours').value)*60+Number($('trainingMinutes').value)}:{})};else delete profile().events[selected];try{persist();render();$('saveStatus').textContent='저장됨';$('dayDialog').close();}catch{state=JSON.parse(before);$('saveStatus').textContent='저장 실패';}});
+function updateAbsenceUI(){const t=$('eventType').value;const active=['halfleave','late','early','outing'].includes(t);$('absenceWrap').hidden=!active;$('absenceHint').textContent=t==='halfleave'?'반일연가: 오전 09:00~14:00 또는 오후 14:00~18:00':t==='late'?'지각: 출근 예정 시각부터 실제 출근 시각까지':t==='early'?'조퇴: 실제 퇴근 시각부터 근무 종료 시각까지':'외출: 근무 중 외출 시작~복귀 시각';}document.querySelectorAll('.event-category-card').forEach(btn=>btn.addEventListener('click',()=>setEventCategory(btn.dataset.group)));$('clearEvent').addEventListener('click',()=>setEventCategory(''));$('eventCategory').addEventListener('change',()=>setEventCategory($('eventCategory').value));$('eventType').addEventListener('change',()=>{renderEventChoices();updateEventControls();});
 $('settingsBtn').addEventListener('click',()=>{$('baseDate').value='2026-11-21';$('baseShift').value='0';$('dayHours').value=state.dayHours;$('nightHours').value=state.nightHours;$('settings').showModal();});
 $('saveSettings').addEventListener('click',e=>{if(!$('baseDate').value){e.preventDefault();$('baseDate').reportValidity();return;}const previous=state;state={...state,baseDate:'2026-11-21',baseShift:0,dayHours:$('dayHours').value.trim()||defaultState.dayHours,nightHours:$('nightHours').value.trim()||defaultState.nightHours};try{state=validState(state);persist();render();}catch{state=previous;alert('설정 저장에 실패했습니다.');}});
 $('exportBtn').addEventListener('click',()=>{try{const blob=new Blob([JSON.stringify({app:'shift-calendar',version:5,exportedAt:new Date().toISOString(),data:state},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`교대달력-백업-${today}.json`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);$('backupStatus').textContent='백업 파일을 저장해 주세요.';}catch{$('backupStatus').textContent='백업 생성 실패';}});
